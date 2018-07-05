@@ -1,7 +1,7 @@
 {
-  "name": "codelab-level-one",
-  "description": "Actions on Google Codelab Level 1",
-  "author": "Google Inc",
+  "name": "action-test-app",
+  "description": "Actions on Google Test App",
+  "author": "Tohure",
   "private": true,
   "scripts": {
     "lint": "eslint .",
