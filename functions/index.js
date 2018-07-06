@@ -16,10 +16,17 @@ const app = dialogflow({debug: true});
 
 // Handle the Dialogflow intent named 'Default Welcome Intent'.
 app.intent('Default Welcome Intent', (conv) => {
-  conv.ask(new Permission({
-    context: 'Hi there, to get to know you better',
-    permissions: 'NAME'
-  }));
+  if (conv.user.locale == 'en-US') {
+    conv.ask(new Permission({
+      context: 'Hi there, to get to know you better',
+      permissions: 'NAME'}
+    ));
+  } else {
+    conv.ask(new Permission({
+      context: 'Hola, para trabajar mejor ',
+      permissions: 'NAME'}
+    ));
+  }
 });
 
 // Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
