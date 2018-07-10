@@ -15,18 +15,18 @@ const i18n = require('i18n');
 const functions = require('firebase-functions');
 
 // Instantiate the Dialogflow client.
-const app = dialogflow({ debug: true });
+const app = dialogflow({debug: true});
 
 // Configure Locales
 i18n.configure({
     directory: __dirname + '/locales',
     objectNotation: true,
     fallbacks: {
-        "es-419": "es",
-        "es-ES": "es",
-        "es-MX": "es",
-        "es-US": "es",
-        "es-PE": "es",
+        'es-419': 'es',
+        'es-ES': 'es',
+        'es-MX': 'es',
+        'es-US': 'es',
+        'es-PE': 'es',
     },
 });
 
@@ -52,34 +52,39 @@ app.intent('Default Welcome Intent', (conv) => {
 // agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
 app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
     if (!permissionGranted) {
-        conv.ask(i18n.__('askForColors.withoutPermissions'));
+        conv.ask(i18n.__(
+            'askForColors.withoutPermissions'));
     } else {
-        conv.ask(i18n.__('askForColors.withPermissions', conv.user.name.display));
+        conv.ask(i18n.__(
+            'askForColors.withPermissions',
+            conv.user.name.display));
     }
 });
 
 // Handle the Dialogflow intent named 'favorite color'.
 // The intent collects a parameter named 'color'.
-app.intent('favorite color', (conv, { color }) => {
+app.intent('favorite color', (conv, {color}) => {
     const luckyNumber = color.length;
     const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
 
     if (conv.data.userName) {
-        // If we collected user name previously, address them by name and use SSML
+        // If we collected user name previously,
+        // address them by name and use SSML
         // to embed an audio snippet in the response.
-        conv.ask(`<speak>${conv.data.userName}, your lucky number is ` +
-            `${luckyNumber}.<audio src="${audioSound}"></audio>` +
-            `Would you like to hear some fake colors?</speak>`);
+        conv.ask(i18n.__('responseForColors.withPermissions',
+            conv.data.userName,
+            luckyNumber,
+            audioSound));
     } else {
-        conv.ask(`<speak>Your lucky number is ${luckyNumber}.` +
-            `<audio src="${audioSound}"></audio>` +
-            `Would you like to hear some fake colors?</speak>`);
+        conv.ask(i18n.__('responseForColors.withoutPermissions',
+            luckyNumber,
+            audioSound));
     }
 });
 
 // Handle the Dialogflow intent named 'favorite fake color'.
-app.intent('favorite fake color', (conv, { fakeColor }) => {
-    conv.close(`Here's the color`, colorMap[fakeColor]);
+app.intent('favorite fake color', (conv, {fakeColor}) => {
+    conv.close(i18n.__('responseForFakeColor'), colorMap[fakeColor]);
 });
 
 // Define a mapping of fake color strings to basic card objects.

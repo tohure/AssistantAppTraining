@@ -6,5 +6,10 @@
     "askForColors": {
         "withPermissions": "Gracias, %s. ¿Cuál es tu color favorito?",
         "withoutPermissions": "No te preocupes. ¿Cuál es tu color favorito?"
-    }
+    },
+    "responseForColors": {
+        "withPermissions": "<speak>%s, tu número de la suerte es %s.<audio src=\"%s\"></audio> ¿Te gustaría ver algunos colores falsos?</speak>",
+        "withoutPermissions": "<speak>Tu número de la suerte es %s.<audio src=\"%s\"></audio> ¿Te gustaría ver algunos colores falsos?</speak>"
+    },
+    "responseForFakeColor": "Este es el color"    
  }

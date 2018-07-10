@@ -1,10 +1,15 @@
 {
-    "test": "Hi, Tohure --> %s",
+    "test": "Hello, Tohure --> %s",
     "permissions": {
         "context": "Hi there, to get to know you better"
     },
     "askForColors": {
         "withPermissions": "Thanks, %s. What's your favorite color?",
         "withoutPermissions": "Ok, no worries. What's your favorite color?"
-    }
+    },
+    "responseForColors": {
+        "withPermissions": "<speak>%s, your lucky number is %s.<audio src=\"%s\"></audio> Would you like to hear some fake colors?</speak>",
+        "withoutPermissions": "<speak>Your lucky number is %s.<audio src=\"%s\"></audio> Would you like to hear some fake colors?</speak>"
+    },
+    "responseForFakeColor": "Here's the color"
  }
