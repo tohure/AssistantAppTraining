@@ -15,24 +15,29 @@ const i18n = require('i18n');
 const functions = require('firebase-functions');
 
 // Instantiate the Dialogflow client.
-const app = dialogflow({debug: true});
+const app = dialogflow({ debug: true });
 
-// Configure Locale
+// Configure Locales
 i18n.configure({
-    locales: ['en-US', 'en-GB', 'es-ES', 'es-419'],
     directory: __dirname + '/locales',
     objectNotation: true,
-    defaultLocale: 'en-US'}
-);
+    fallbacks: {
+        "es-419": "es",
+        "es-ES": "es",
+        "es-MX": "es",
+        "es-US": "es",
+        "es-PE": "es",
+    },
+});
 
-// Config app locale middleware
+// Configure i18n locale in middleware
 app.middleware((conv) => {
     i18n.setLocale(conv.user.locale);
 });
 
-// Test intents
+// Deep Link Test intents
 app.intent('test', (conv) => { // must not be async for i18n
-    conv.close(i18n.__('test'));
+    conv.close(i18n.__('test', conv.user.locale));
 });
 
 // Handle the Dialogflow intent named 'Default Welcome Intent'.
@@ -55,7 +60,7 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
 
 // Handle the Dialogflow intent named 'favorite color'.
 // The intent collects a parameter named 'color'.
-app.intent('favorite color', (conv, {color}) => {
+app.intent('favorite color', (conv, { color }) => {
     const luckyNumber = color.length;
     const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
 
@@ -73,7 +78,7 @@ app.intent('favorite color', (conv, {color}) => {
 });
 
 // Handle the Dialogflow intent named 'favorite fake color'.
-app.intent('favorite fake color', (conv, {fakeColor}) => {
+app.intent('favorite fake color', (conv, { fakeColor }) => {
     conv.close(`Here's the color`, colorMap[fakeColor]);
 });
 

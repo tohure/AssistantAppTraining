@@ -1,5 +1,5 @@
 {
-    "test": "Hi, Tohure",
+    "test": "Hi, Tohure --> %s",
     "permissions": {
         "context": "Hi there, to get to know you better"
     },
