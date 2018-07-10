@@ -3,7 +3,7 @@
     "permissions": {
         "context": "Hola, para conocerte mejor"
     },
-    "askForColors":{
+    "askForColors": {
         "withPermissions": "Gracias, %s. ¿Cuál es tu color favorito?",
         "withoutPermissions": "No te preocupes. ¿Cuál es tu color favorito?"
     }

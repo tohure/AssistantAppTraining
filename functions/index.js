@@ -21,6 +21,7 @@ const app = dialogflow({debug: true});
 i18n.configure({
     locales: ['en-US', 'en-GB', 'es-ES', 'es-419'],
     directory: __dirname + '/locales',
+    objectNotation: true,
     defaultLocale: 'en-US'}
 );
 
@@ -46,14 +47,9 @@ app.intent('Default Welcome Intent', (conv) => {
 // agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
 app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
     if (!permissionGranted) {
-        conv.ask(i18n.__(
-            'askForColors.withoutPermissions')
-        );
+        conv.ask(i18n.__('askForColors.withoutPermissions'));
     } else {
-        conv.ask(i18n.__(
-            'askForColors.withPermissions',
-            conv.user.name.display)
-        );
+        conv.ask(i18n.__('askForColors.withPermissions', conv.user.name.display));
     }
 });
 
