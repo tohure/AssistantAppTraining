@@ -15,7 +15,7 @@ const i18n = require('i18n');
 const functions = require('firebase-functions');
 
 // Instantiate the Dialogflow client.
-const app = dialogflow({debug: true});
+const app = dialogflow({ debug: true });
 
 // Configure Locales
 i18n.configure({
@@ -42,10 +42,17 @@ app.intent('test', (conv) => { // must not be async for i18n
 
 // Handle the Dialogflow intent named 'Default Welcome Intent'.
 app.intent('Default Welcome Intent', (conv) => {
-    conv.ask(new Permission({
-        context: `${i18n.__('permissions.context')}`,
-        permissions: 'NAME'}
-    ));
+    const name = conv.user.storage.userName;
+    if (!name) {
+        // Asks the user's permission to know their name, for personalization.
+        conv.ask(new Permission({
+            context: `${i18n.__('permissions.context')}`,
+            permissions: 'NAME'
+        }
+        ));
+    } else {
+        conv.ask(`Hi again, ${name}. What's your favorite color?`);
+    }
 });
 
 // Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
@@ -63,16 +70,16 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
 
 // Handle the Dialogflow intent named 'favorite color'.
 // The intent collects a parameter named 'color'.
-app.intent('favorite color', (conv, {color}) => {
+app.intent('favorite color', (conv, { color }) => {
     const luckyNumber = color.length;
     const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
 
-    if (conv.data.userName) {
+    if (conv.user.storage.userName) {
         // If we collected user name previously,
         // address them by name and use SSML
         // to embed an audio snippet in the response.
         conv.ask(i18n.__('responseForColors.withPermissions',
-            conv.data.userName,
+            conv.user.storage.userName,
             luckyNumber,
             audioSound));
     } else {
@@ -83,7 +90,7 @@ app.intent('favorite color', (conv, {color}) => {
 });
 
 // Handle the Dialogflow intent named 'favorite fake color'.
-app.intent('favorite fake color', (conv, {fakeColor}) => {
+app.intent('favorite fake color', (conv, { fakeColor }) => {
     conv.close(i18n.__('responseForFakeColor'), colorMap[fakeColor]);
 });
 
