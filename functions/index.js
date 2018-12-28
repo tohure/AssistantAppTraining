@@ -1,5 +1,8 @@
 'use strict';
 
+// Import Google Debugger
+const debug = require('@google-cloud/debug-agent').start({ allowExpressions: true })
+
 // Import the Dialogflow module and response creation dependencies
 // from the Actions on Google client library.
 const {
@@ -7,9 +10,6 @@ const {
     BasicCard,
     Permission,
 } = require('actions-on-google');
-
-// Import Google Debugger
-const debug = require('@google-cloud/debug-agent');
 
 // Import dependencies for the i18n-node
 const i18n = require('i18n');
@@ -21,11 +21,6 @@ const functions = require('firebase-functions');
 const app = dialogflow({
     debug: true
 });
-
-//Debugger
-debug.start({
-    allowExpressions: true
-})
 
 // Configure Locales
 i18n.configure({
