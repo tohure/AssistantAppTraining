@@ -8,6 +8,9 @@ const {
     Permission,
 } = require('actions-on-google');
 
+// Import Google Debugger
+const debug = require('@google-cloud/debug-agent');
+
 // Import dependencies for the i18n-node
 const i18n = require('i18n');
 
@@ -15,7 +18,14 @@ const i18n = require('i18n');
 const functions = require('firebase-functions');
 
 // Instantiate the Dialogflow client.
-const app = dialogflow({ debug: true });
+const app = dialogflow({
+    debug: true
+});
+
+//Debugger
+debug.start({
+    allowExpressions: true
+})
 
 // Configure Locales
 i18n.configure({
@@ -48,8 +58,7 @@ app.intent('Default Welcome Intent', (conv) => {
         conv.ask(new Permission({
             context: `${i18n.__('permissions.context')}`,
             permissions: 'NAME'
-        }
-        ));
+        }));
     } else {
         conv.ask(`Hi again, ${name}. What's your favorite color?`);
     }
