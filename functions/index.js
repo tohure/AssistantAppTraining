@@ -1,7 +1,8 @@
 'use strict';
 
 // Import Google Debugger
-const debug = require('@google-cloud/debug-agent').start({ allowExpressions: true })
+const debug = require('@google-cloud/debug-agent');
+debug.start({ allowExpressions: true });
 
 // Import the Dialogflow module and response creation dependencies
 // from the Actions on Google client library.
