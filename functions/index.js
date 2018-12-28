@@ -67,6 +67,7 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
         conv.ask(i18n.__(
             'askForColors.withoutPermissions'));
     } else {
+        conv.user.storage.userName = conv.user.name.display;
         conv.ask(i18n.__(
             'askForColors.withPermissions',
             conv.user.name.display));
