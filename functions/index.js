@@ -1,8 +1,9 @@
 'use strict';
 
 // Import Google Debugger
-const debug = require('@google-cloud/debug-agent');
-debug.start({ allowExpressions: true });
+const debug = require('@google-cloud/debug-agent').start({
+    allowExpressions: true
+});
 
 // Import the Dialogflow module and response creation dependencies
 // from the Actions on Google client library.
@@ -38,6 +39,9 @@ i18n.configure({
 
 // Configure i18n locale in middleware
 app.middleware((conv) => {
+    debug.isReady().then(() => {
+        console.log('terminating function');
+    });
     i18n.setLocale(conv.user.locale);
 });
 
@@ -76,7 +80,9 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
 
 // Handle the Dialogflow intent named 'favorite color'.
 // The intent collects a parameter named 'color'.
-app.intent('favorite color', (conv, { color }) => {
+app.intent('favorite color', (conv, {
+    color
+}) => {
     const luckyNumber = color.length;
     const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
 
@@ -96,7 +102,9 @@ app.intent('favorite color', (conv, { color }) => {
 });
 
 // Handle the Dialogflow intent named 'favorite fake color'.
-app.intent('favorite fake color', (conv, { fakeColor }) => {
+app.intent('favorite fake color', (conv, {
+    fakeColor
+}) => {
     conv.close(i18n.__('responseForFakeColor'), colorMap[fakeColor]);
 });
 
