@@ -2,7 +2,11 @@
 
 // Import Google Debugger
 const debug = require('@google-cloud/debug-agent').start({
-    allowExpressions: true
+    allowExpressions: true,
+    serviceContext: {
+        service: 'gcf-code-colors',
+        version: 'v1.3'
+    }
 });
 
 // Import the Dialogflow module and response creation dependencies
