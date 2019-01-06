@@ -5,7 +5,7 @@ const debug = require('@google-cloud/debug-agent').start({
     allowExpressions: true,
     serviceContext: {
         service: 'gcf-code-colors',
-        version: 'v1.3'
+        version: 'v2.0.1'
     }
 });
 
@@ -44,7 +44,7 @@ i18n.configure({
 // Configure i18n locale in middleware
 app.middleware((conv) => {
     debug.isReady().then(() => {
-        console.log('terminating function');
+        console.log('in function');
     });
     i18n.setLocale(conv.user.locale);
 });

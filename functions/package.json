@@ -1,7 +1,8 @@
 {
   "name": "action-test-app",
-  "description": "Actions on Google Test App",
+  "description": "Codelabs AoG",
   "author": "Tohure",
+  "version": "2.0.1",
   "private": true,
   "scripts": {
     "lint": "eslint .",
