@@ -43,9 +43,6 @@ i18n.configure({
 
 // Configure i18n locale in middleware
 app.middleware((conv) => {
-    debug.isReady().then(() => {
-        console.log('in function');
-    });
     i18n.setLocale(conv.user.locale);
 });
 
@@ -64,7 +61,10 @@ app.intent('Default Welcome Intent', (conv) => {
             permissions: 'NAME'
         }));
     } else {
-        conv.ask(`Hi again, ${name}. What's your favorite color?`);
+        const splitName = name.split(' ');
+        conv.ask(i18n.__(
+            'askForColors.grettingAgain',
+            splitName[0]));
     }
 });
 
@@ -112,6 +112,20 @@ app.intent('favorite fake color', (conv, {
     conv.close(i18n.__('responseForFakeColor'), colorMap[fakeColor]);
 });
 
+// Handle the Dialogflow NO_INPUT intent.
+// Triggered when the user doesn't provide input to the Action
+app.intent('actions_intent_NO_INPUT', (conv) => {
+    // Use the number of reprompts to vary response
+    const repromptCount = parseInt(conv.arguments.get('REPROMPT_COUNT'));
+    if (repromptCount === 0) {
+        conv.ask(i18n.__('noInputReprompt.firstAsk'));
+    } else if (repromptCount === 1) {
+        conv.ask(i18n.__('noInputReprompt.secondAsk'));
+    } else if (conv.arguments.get('IS_FINAL_REPROMPT')) {
+        conv.close(i18n.__('noInputReprompt.sorryTrouble'));
+    }
+});
+
 // Define a mapping of fake color strings to basic card objects.
 const colorMap = {
     'indigo taco': new BasicCard({
@@ -142,3 +156,18 @@ const colorMap = {
 
 // Set the DialogflowApp object to handle the HTTPS POST request.
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
+
+/*  exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
+
+    const debugReady = debug.isReady();
+    debugReady.then(() => {
+
+        const sessionClient = new app.SessionsClient();
+        const responses = await sessionClient.detectIntent(request);
+    
+
+
+        console.log('terminating function');
+    });
+
+}*/

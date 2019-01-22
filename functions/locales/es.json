@@ -4,8 +4,14 @@
         "context": "Hola, para conocerte mejor"
     },
     "askForColors": {
+        "grettingAgain": "Hola denuevo %s. ¿Cuál es tu color favorito?",
         "withPermissions": "Gracias, %s. ¿Cuál es tu color favorito?",
         "withoutPermissions": "No te preocupes. ¿Cuál es tu color favorito?"
+    },
+    "noInputReprompt": {
+        "firstAsk": "¿Acerca de qué color te gustaría oir?",
+        "secondAsk": "Por favor, mencionamé el nombre del color",
+        "sorryTrouble": "Lo siento, creo que tenemos un problema. Intenta nuevamente más tarde. Hasta pronto."
     },
     "responseForColors": {
         "withPermissions": "<speak>%s, tu número de la suerte es %s.<audio src=\"%s\"></audio> ¿Te gustaría ver algunos colores falsos?</speak>",

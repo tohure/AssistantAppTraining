@@ -3,6 +3,9 @@
     "ecmaVersion": 7,
     "sourceType": "script"
   },
+  "rules": {
+    "linebreak-style": ["error", "windows", "unix"]
+  },
   "extends": ["google"],
   "env": {
     "node": true
