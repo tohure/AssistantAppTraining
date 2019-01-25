@@ -82,19 +82,23 @@ app.intent('Default Welcome Intent', (conv) => {
 // Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
 // agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
 app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
-    if (!permissionGranted) {
-        conv.ask(i18n.__(
-            'askForColors.withoutPermissions'));
-    } else {
-        conv.user.storage.userName = conv.user.name.display;
-        conv.ask(i18n.__(
-            'askForColors.withPermissions',
-            getSplitName(conv.user.storage.userName)));
-    }
-    conv.ask(new Suggestions(
-        i18n.__('baseColors.red'),
-        i18n.__('baseColors.blue'),
-        i18n.__('baseColors.green')));
+
+    debug.isReady().then(() => {
+        if (!permissionGranted) {
+            conv.ask(i18n.__(
+                'askForColors.withoutPermissions'));
+        } else {
+            conv.user.storage.userName = conv.user.name.display;
+            conv.ask(i18n.__(
+                'askForColors.withPermissions',
+                getSplitName(conv.user.storage.userName)));
+        }
+        conv.ask(new Suggestions(
+            i18n.__('baseColors.red'),
+            i18n.__('baseColors.blue'),
+            i18n.__('baseColors.green')));
+    });
+
 });
 
 // Handle the Dialogflow intent named 'favorite color'.
@@ -102,30 +106,38 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
 app.intent('favorite color', (conv, {
     color
 }) => {
-    const luckyNumber = color.length;
-    const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
 
-    if (conv.user.storage.userName) {
-        // If we collected user name previously,
-        // address them by name and use SSML
-        // to embed an audio snippet in the response.
-        conv.ask(i18n.__('responseForColors.withPermissions',
-            getSplitName(conv.user.storage.userName),
-            luckyNumber,
-            audioSound));
-    } else {
-        conv.ask(i18n.__('responseForColors.withoutPermissions',
-            luckyNumber,
-            audioSound));
-    }
-    conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
+    debug.isReady().then(() => {
+        const luckyNumber = color.length;
+        const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
+
+        if (conv.user.storage.userName) {
+            // If we collected user name previously,
+            // address them by name and use SSML
+            // to embed an audio snippet in the response.
+            conv.ask(i18n.__('responseForColors.withPermissions',
+                getSplitName(conv.user.storage.userName),
+                luckyNumber,
+                audioSound));
+        } else {
+            conv.ask(i18n.__('responseForColors.withoutPermissions',
+                luckyNumber,
+                audioSound));
+        }
+        conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
+    });
+
 });
 
 // Handle the Dialogflow follow-up intents
 app.intent(['favorite color - yes', 'favorite fake color - yes'], (conv) => {
-    conv.ask(i18n.__('askForColors.fakeColorAsk'));
-    // If the user is using a screened device, display the carousel
-    if (conv.screen) return conv.ask(fakeColorCarousel());
+
+    debug.isReady().then(() => {
+        conv.ask(i18n.__('askForColors.fakeColorAsk'));
+        // If the user is using a screened device, display the carousel
+        if (conv.screen) return conv.ask(fakeColorCarousel());
+    });
+
 });
 
 // Handle the Dialogflow intent named 'favorite fake color'.
@@ -133,29 +145,37 @@ app.intent(['favorite color - yes', 'favorite fake color - yes'], (conv) => {
 app.intent('favorite fake color', (conv, {
     fakeColor
 }) => {
-    fakeColor = conv.arguments.get('OPTION') || fakeColor;
-    // Present user with the corresponding basic card and end the conversation.
-    if (!conv.screen) {
-        conv.ask(colorMap[fakeColor].text);
-    } else {
-        conv.ask(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
-    }
-    conv.ask(i18n.__('fakeColors.another'));
-    conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
+    debug.isReady().then(() => {
+        fakeColor = conv.arguments.get('OPTION') || fakeColor;
+        // Present user with the corresponding basic card and end the conversation.
+        if (!conv.screen) {
+            conv.ask(colorMap[fakeColor].text);
+        } else {
+            conv.ask(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
+        }
+        conv.ask(i18n.__('fakeColors.another'));
+        conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
+    });
+
 });
 
 // Handle the Dialogflow NO_INPUT intent.
 // Triggered when the user doesn't provide input to the Action
 app.intent('actions_intent_NO_INPUT', (conv) => {
-    // Use the number of reprompts to vary response
-    const repromptCount = parseInt(conv.arguments.get('REPROMPT_COUNT'));
-    if (repromptCount === 0) {
-        conv.ask(i18n.__('noInputReprompt.firstAsk'));
-    } else if (repromptCount === 1) {
-        conv.ask(i18n.__('noInputReprompt.secondAsk'));
-    } else if (conv.arguments.get('IS_FINAL_REPROMPT')) {
-        conv.close(i18n.__('noInputReprompt.sorryTrouble'));
-    }
+
+    debug.isReady().then(() => {
+
+        // Use the number of reprompts to vary response
+        const repromptCount = parseInt(conv.arguments.get('REPROMPT_COUNT'));
+        if (repromptCount === 0) {
+            conv.ask(i18n.__('noInputReprompt.firstAsk'));
+        } else if (repromptCount === 1) {
+            conv.ask(i18n.__('noInputReprompt.secondAsk'));
+        } else if (conv.arguments.get('IS_FINAL_REPROMPT')) {
+            conv.close(i18n.__('noInputReprompt.sorryTrouble'));
+        }
+    });
+
 });
 
 // Define a mapping of fake color strings to basic card objects.
@@ -231,4 +251,4 @@ function getSplitName(name) {
 }
 
 // Set the DialogflowApp object to handle the HTTPS POST request.
-exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
+exports.codeColorTohure = functions.https.onRequest(app);
