@@ -50,28 +50,33 @@ app.middleware((conv) => {
 });
 
 // Deep Link Test intents
-app.intent('test', (conv) => { // must not be async for i18n
+app.intent('test', (conv) => {
     conv.close(i18n.__('test', conv.user.locale));
 });
 
 // Handle the Dialogflow intent named 'Default Welcome Intent'.
 app.intent('Default Welcome Intent', (conv) => {
-    const name = conv.user.storage.userName;
-    if (!name) {
-        // Asks the user's permission to know their name, for personalization.
-        conv.ask(new Permission({
-            context: `${i18n.__('permissions.context')}`,
-            permissions: 'NAME'
-        }));
-    } else {
-        conv.ask(i18n.__(
-            'askForColors.grettingAgain',
-            getSplitName(name)));
-        conv.ask(new Suggestions(
-            i18n.__('baseColors.red'),
-            i18n.__('baseColors.blue'),
-            i18n.__('baseColors.green')));
-    }
+
+    debug.isReady().then(() => {
+
+        const name = conv.user.storage.userName;
+        if (!name) {
+            // Asks the user's permission to know their name, for personalization.
+            conv.ask(new Permission({
+                context: `${i18n.__('permissions.context')}`,
+                permissions: 'NAME'
+            }));
+        } else {
+            conv.ask(i18n.__(
+                'askForColors.grettingAgain',
+                getSplitName(name)));
+            conv.ask(new Suggestions(
+                i18n.__('baseColors.red'),
+                i18n.__('baseColors.blue'),
+                i18n.__('baseColors.green')));
+        }
+
+    });
 });
 
 // Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
