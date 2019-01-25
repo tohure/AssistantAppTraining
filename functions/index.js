@@ -117,22 +117,16 @@ app.intent('favorite color - yes', (conv) => {
 });
 
 // Handle the Dialogflow intent named 'favorite fake color'.
-app.intent('favorite fake color', (conv, {
-    fakeColor
-}) => {
-    conv.close(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
-});
-
-// Handle the Dialogflow intent named 'favorite fake color'.
 // The intent collects a parameter named 'fakeColor'.
 app.intent('favorite fake color', (conv, {
     fakeColor
 }) => {
     fakeColor = conv.arguments.get('OPTION') || fakeColor;
     // Present user with the corresponding basic card and end the conversation.
-    conv.ask(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
     if (!conv.screen) {
         conv.ask(colorMap[fakeColor].text);
+    } else {
+        conv.ask(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
     }
 });
 
@@ -154,7 +148,7 @@ app.intent('actions_intent_NO_INPUT', (conv) => {
 const colorMap = {
     'indigo taco': {
         title: 'Indigo Taco',
-        text: `${i18n.__('fakeColors.indigo')}`,
+        text: 'Indigo Taco is a subtle bluish tone.',
         image: {
             url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDN1JRbF9ZMHZsa1k/style-color-uiapplication-palette1.png',
             accessibilityText: 'Indigo Taco Color',
@@ -163,7 +157,7 @@ const colorMap = {
     },
     'pink unicorn': {
         title: 'Pink Unicorn',
-        text: `${i18n.__('fakeColors.unicorn')}`,
+        text: 'Pink Unicorn is an imaginative reddish hue.',
         image: {
             url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDbFVfTXpoaEE5Vzg/style-color-uiapplication-palette2.png',
             accessibilityText: 'Pink Unicorn Color',
@@ -172,7 +166,7 @@ const colorMap = {
     },
     'blue grey coffee': {
         title: 'Blue Grey Coffee',
-        text: `${i18n.__('fakeColors.coffee')}`,
+        text: 'Calling out to rainy days, Blue Grey Coffee brings to mind your favorite coffee shop.',
         image: {
             url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDZUdpeURtaTUwLUk/style-color-colorsystem-gray-secondary-161116.png',
             accessibilityText: 'Blue Grey Coffee Color',
