@@ -57,7 +57,7 @@ app.intent('test', (conv) => {
 // Handle the Dialogflow intent named 'Default Welcome Intent'.
 app.intent('Default Welcome Intent', (conv) => {
 
-    debug.isReady().then(() => {
+    return debug.isReady().then(() => {
 
         const name = conv.user.storage.userName;
         if (!name) {
@@ -83,7 +83,7 @@ app.intent('Default Welcome Intent', (conv) => {
 // agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
 app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
 
-    debug.isReady().then(() => {
+    return debug.isReady().then(() => {
         if (!permissionGranted) {
             conv.ask(i18n.__(
                 'askForColors.withoutPermissions'));
@@ -107,7 +107,7 @@ app.intent('favorite color', (conv, {
     color
 }) => {
 
-    debug.isReady().then(() => {
+    return debug.isReady().then(() => {
         const luckyNumber = color.length;
         const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
 
@@ -132,7 +132,7 @@ app.intent('favorite color', (conv, {
 // Handle the Dialogflow follow-up intents
 app.intent(['favorite color - yes', 'favorite fake color - yes'], (conv) => {
 
-    debug.isReady().then(() => {
+    return debug.isReady().then(() => {
         conv.ask(i18n.__('askForColors.fakeColorAsk'));
         // If the user is using a screened device, display the carousel
         if (conv.screen) return conv.ask(fakeColorCarousel());
@@ -145,7 +145,7 @@ app.intent(['favorite color - yes', 'favorite fake color - yes'], (conv) => {
 app.intent('favorite fake color', (conv, {
     fakeColor
 }) => {
-    debug.isReady().then(() => {
+    return debug.isReady().then(() => {
         fakeColor = conv.arguments.get('OPTION') || fakeColor;
         // Present user with the corresponding basic card and end the conversation.
         if (!conv.screen) {
@@ -163,7 +163,7 @@ app.intent('favorite fake color', (conv, {
 // Triggered when the user doesn't provide input to the Action
 app.intent('actions_intent_NO_INPUT', (conv) => {
 
-    debug.isReady().then(() => {
+    return debug.isReady().then(() => {
 
         // Use the number of reprompts to vary response
         const repromptCount = parseInt(conv.arguments.get('REPROMPT_COUNT'));
