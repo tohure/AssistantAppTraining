@@ -3,13 +3,22 @@
     "permissions": {
         "context": "Hola, para conocerte mejor"
     },
-    "fakeColors" : {
+    "baseColors": {
+        "red": "Rojo",
+        "blue": "Azul",
+        "green": "Verde"
+    },
+    "options": {
+        "yes": "Si"
+    },
+    "fakeColors": {
+        "another": "¿Te gustaría escuchar otro color falso?",
         "indigo": "El taco índigo es un sutil tono azulado.",
         "unicorn": "El Rosa Unicorn es un color rojizo imaginativo.",
         "coffee": "Llamando a los días de lluvia, Blue Grey Coffee trae a la mente su cafetería favorita."
     },
     "askForColors": {
-        "fakeColorAsk" : "¿Qué color: indigo taco, pink unicorn o blue grey coffee?",
+        "fakeColorAsk": "¿Qué color: indigo taco, pink unicorn o blue grey coffee?",
         "grettingAgain": "Hola denuevo %s. ¿Cuál es tu color favorito?",
         "withPermissions": "Gracias, %s. ¿Cuál es tu color favorito?",
         "withoutPermissions": "No te preocupes. ¿Cuál es tu color favorito?"
@@ -23,5 +32,5 @@
         "withPermissions": "<speak>%s, tu número de la suerte es %s.<audio src=\"%s\"></audio> ¿Te gustaría ver algunos colores falsos?</speak>",
         "withoutPermissions": "<speak>Tu número de la suerte es %s.<audio src=\"%s\"></audio> ¿Te gustaría ver algunos colores falsos?</speak>"
     },
-    "responseForFakeColor": "Este es el color"    
- }
+    "responseForFakeColor": "Este es el color"
+}

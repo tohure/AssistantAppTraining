@@ -3,7 +3,16 @@
     "permissions": {
         "context": "Hi there, to get to know you better"
     },
+    "baseColors": {
+        "red": "Red",
+        "blue": "Blue",
+        "green": "Green"
+    },
+    "options": {
+        "yes": "Yes"
+    },
     "fakeColors" : {
+        "another": "Do you want to hear about another fake color?",
         "indigo": "Indigo Taco is a subtle bluish tone.",
         "unicorn": "Pink Unicorn is an imaginative reddish hue.",
         "coffee": "Calling out to rainy days, Blue Grey Coffee brings to mind your favorite coffee shop."

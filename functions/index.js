@@ -64,10 +64,13 @@ app.intent('Default Welcome Intent', (conv) => {
             permissions: 'NAME'
         }));
     } else {
-        const splitName = name.split(' ');
         conv.ask(i18n.__(
             'askForColors.grettingAgain',
-            splitName[0]));
+            getSplitName(name)));
+        conv.ask(new Suggestions(
+            i18n.__('baseColors.red'),
+            i18n.__('baseColors.blue'),
+            i18n.__('baseColors.green')));
     }
 });
 
@@ -81,8 +84,12 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
         conv.user.storage.userName = conv.user.name.display;
         conv.ask(i18n.__(
             'askForColors.withPermissions',
-            conv.user.name.display));
+            getSplitName(conv.user.storage.userName)));
     }
+    conv.ask(new Suggestions(
+        i18n.__('baseColors.red'),
+        i18n.__('baseColors.blue'),
+        i18n.__('baseColors.green')));
 });
 
 // Handle the Dialogflow intent named 'favorite color'.
@@ -98,7 +105,7 @@ app.intent('favorite color', (conv, {
         // address them by name and use SSML
         // to embed an audio snippet in the response.
         conv.ask(i18n.__('responseForColors.withPermissions',
-            conv.user.storage.userName,
+            getSplitName(conv.user.storage.userName),
             luckyNumber,
             audioSound));
     } else {
@@ -106,12 +113,12 @@ app.intent('favorite color', (conv, {
             luckyNumber,
             audioSound));
     }
+    conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
 });
 
-// Handle the Dialogflow intent named 'favorite color - yes'
-app.intent('favorite color - yes', (conv) => {
-    conv.ask(i18n.__(
-        'askForColors.fakeColorAsk'));
+// Handle the Dialogflow follow-up intents
+app.intent(['favorite color - yes', 'favorite fake color - yes'], (conv) => {
+    conv.ask(i18n.__('askForColors.fakeColorAsk'));
     // If the user is using a screened device, display the carousel
     if (conv.screen) return conv.ask(fakeColorCarousel());
 });
@@ -128,6 +135,8 @@ app.intent('favorite fake color', (conv, {
     } else {
         conv.ask(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
     }
+    conv.ask(i18n.__('fakeColors.another'));
+    conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
 });
 
 // Handle the Dialogflow NO_INPUT intent.
@@ -208,6 +217,13 @@ const fakeColorCarousel = () => {
     });
     return carousel;
 };
+
+function getSplitName(name) {
+
+    const splitName = name.split(' ');
+
+    return splitName[0];
+}
 
 // Set the DialogflowApp object to handle the HTTPS POST request.
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
