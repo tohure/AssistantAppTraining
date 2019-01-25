@@ -3,7 +3,13 @@
     "permissions": {
         "context": "Hola, para conocerte mejor"
     },
+    "fakeColors" : {
+        "indigo": "El taco índigo es un sutil tono azulado.",
+        "unicorn": "El Rosa Unicorn es un color rojizo imaginativo.",
+        "coffee": "Llamando a los días de lluvia, Blue Grey Coffee trae a la mente su cafetería favorita."
+    },
     "askForColors": {
+        "fakeColorAsk" : "¿Qué color: indigo taco, pink unicorn o blue grey coffee?",
         "grettingAgain": "Hola denuevo %s. ¿Cuál es tu color favorito?",
         "withPermissions": "Gracias, %s. ¿Cuál es tu color favorito?",
         "withoutPermissions": "No te preocupes. ¿Cuál es tu color favorito?"

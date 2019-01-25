@@ -15,6 +15,9 @@ const {
     dialogflow,
     BasicCard,
     Permission,
+    Suggestions,
+    Carousel,
+    Image,
 } = require('actions-on-google');
 
 // Import dependencies for the i18n-node
@@ -105,11 +108,32 @@ app.intent('favorite color', (conv, {
     }
 });
 
+// Handle the Dialogflow intent named 'favorite color - yes'
+app.intent('favorite color - yes', (conv) => {
+    conv.ask(i18n.__(
+        'askForColors.fakeColorAsk'));
+    // If the user is using a screened device, display the carousel
+    if (conv.screen) return conv.ask(fakeColorCarousel());
+});
+
 // Handle the Dialogflow intent named 'favorite fake color'.
 app.intent('favorite fake color', (conv, {
     fakeColor
 }) => {
-    conv.close(i18n.__('responseForFakeColor'), colorMap[fakeColor]);
+    conv.close(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
+});
+
+// Handle the Dialogflow intent named 'favorite fake color'.
+// The intent collects a parameter named 'fakeColor'.
+app.intent('favorite fake color', (conv, {
+    fakeColor
+}) => {
+    fakeColor = conv.arguments.get('OPTION') || fakeColor;
+    // Present user with the corresponding basic card and end the conversation.
+    conv.ask(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
+    if (!conv.screen) {
+        conv.ask(colorMap[fakeColor].text);
+    }
 });
 
 // Handle the Dialogflow NO_INPUT intent.
@@ -128,46 +152,68 @@ app.intent('actions_intent_NO_INPUT', (conv) => {
 
 // Define a mapping of fake color strings to basic card objects.
 const colorMap = {
-    'indigo taco': new BasicCard({
+    'indigo taco': {
         title: 'Indigo Taco',
+        text: `${i18n.__('fakeColors.indigo')}`,
         image: {
             url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDN1JRbF9ZMHZsa1k/style-color-uiapplication-palette1.png',
             accessibilityText: 'Indigo Taco Color',
         },
         display: 'WHITE',
-    }),
-    'pink unicorn': new BasicCard({
+    },
+    'pink unicorn': {
         title: 'Pink Unicorn',
+        text: `${i18n.__('fakeColors.unicorn')}`,
         image: {
             url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDbFVfTXpoaEE5Vzg/style-color-uiapplication-palette2.png',
             accessibilityText: 'Pink Unicorn Color',
         },
         display: 'WHITE',
-    }),
-    'blue grey coffee': new BasicCard({
+    },
+    'blue grey coffee': {
         title: 'Blue Grey Coffee',
+        text: `${i18n.__('fakeColors.coffee')}`,
         image: {
             url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDZUdpeURtaTUwLUk/style-color-colorsystem-gray-secondary-161116.png',
             accessibilityText: 'Blue Grey Coffee Color',
         },
         display: 'WHITE',
-    }),
+    },
+};
+
+// In the case the user is interacting with the Action on a screened device
+// The Fake Color Carousel will display a carousel of color cards
+const fakeColorCarousel = () => {
+    const carousel = new Carousel({
+        items: {
+            'indigo taco': {
+                title: 'Indigo Taco',
+                synonyms: ['indigo', 'taco'],
+                image: new Image({
+                    url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDN1JRbF9ZMHZsa1k/style-color-uiapplication-palette1.png',
+                    alt: 'Indigo Taco Color',
+                }),
+            },
+            'pink unicorn': {
+                title: 'Pink Unicorn',
+                synonyms: ['pink', 'unicorn'],
+                image: new Image({
+                    url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDbFVfTXpoaEE5Vzg/style-color-uiapplication-palette2.png',
+                    alt: 'Pink Unicorn Color',
+                }),
+            },
+            'blue grey coffee': {
+                title: 'Blue Grey Coffee',
+                synonyms: ['blue', 'grey', 'coffee'],
+                image: new Image({
+                    url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDZUdpeURtaTUwLUk/style-color-colorsystem-gray-secondary-161116.png',
+                    alt: 'Blue Grey Coffee Color',
+                }),
+            },
+        }
+    });
+    return carousel;
 };
 
 // Set the DialogflowApp object to handle the HTTPS POST request.
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
-
-/*  exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
-
-    const debugReady = debug.isReady();
-    debugReady.then(() => {
-
-        const sessionClient = new app.SessionsClient();
-        const responses = await sessionClient.detectIntent(request);
-    
-
-
-        console.log('terminating function');
-    });
-
-}*/
