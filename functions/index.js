@@ -8,6 +8,7 @@ const debug = require('@google-cloud/debug-agent').start({
         version: 'v2.0.1'
     }
 });
+let debugInitialized;
 
 // Import the Dialogflow module and response creation dependencies
 // from the Actions on Google client library.
@@ -44,9 +45,10 @@ i18n.configure({
     },
 });
 
-// Configure i18n locale in middleware
+// Configure i18n locale in middleware and debuger Initializer
 app.middleware((conv) => {
     i18n.setLocale(conv.user.locale);
+    debugInitialized = false;
 });
 
 // Deep Link Test intents
@@ -57,48 +59,44 @@ app.intent('test', (conv) => {
 // Handle the Dialogflow intent named 'Default Welcome Intent'.
 app.intent('Default Welcome Intent', (conv) => {
 
-    return debug.isReady().then(() => {
+    const name = conv.user.storage.userName;
+    if (!name) {
+        // Asks the user's permission to know their name, for personalization.
+        conv.ask(new Permission({
+            context: `${i18n.__('permissions.context')}`,
+            permissions: 'NAME'
+        }));
+    } else {
+        conv.ask(i18n.__(
+            'askForColors.grettingAgain',
+            getSplitName(name)));
+        conv.ask(new Suggestions(
+            i18n.__('baseColors.red'),
+            i18n.__('baseColors.blue'),
+            i18n.__('baseColors.green')));
+    }
 
-        const name = conv.user.storage.userName;
-        if (!name) {
-            // Asks the user's permission to know their name, for personalization.
-            conv.ask(new Permission({
-                context: `${i18n.__('permissions.context')}`,
-                permissions: 'NAME'
-            }));
-        } else {
-            conv.ask(i18n.__(
-                'askForColors.grettingAgain',
-                getSplitName(name)));
-            conv.ask(new Suggestions(
-                i18n.__('baseColors.red'),
-                i18n.__('baseColors.blue'),
-                i18n.__('baseColors.green')));
-        }
-
-    });
+    checkDebugger()
 });
 
 // Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
 // agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
 app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
+    if (!permissionGranted) {
+        conv.ask(i18n.__(
+            'askForColors.withoutPermissions'));
+    } else {
+        conv.user.storage.userName = conv.user.name.display;
+        conv.ask(i18n.__(
+            'askForColors.withPermissions',
+            getSplitName(conv.user.storage.userName)));
+    }
+    conv.ask(new Suggestions(
+        i18n.__('baseColors.red'),
+        i18n.__('baseColors.blue'),
+        i18n.__('baseColors.green')));
 
-    return debug.isReady().then(() => {
-        if (!permissionGranted) {
-            conv.ask(i18n.__(
-                'askForColors.withoutPermissions'));
-        } else {
-            conv.user.storage.userName = conv.user.name.display;
-            conv.ask(i18n.__(
-                'askForColors.withPermissions',
-                getSplitName(conv.user.storage.userName)));
-        }
-        conv.ask(new Suggestions(
-            i18n.__('baseColors.red'),
-            i18n.__('baseColors.blue'),
-            i18n.__('baseColors.green')));
-    });
-
+    checkDebugger()
 });
 
 // Handle the Dialogflow intent named 'favorite color'.
@@ -106,38 +104,32 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
 app.intent('favorite color', (conv, {
     color
 }) => {
+    const luckyNumber = color.length;
+    const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
 
-    return debug.isReady().then(() => {
-        const luckyNumber = color.length;
-        const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
-
-        if (conv.user.storage.userName) {
-            // If we collected user name previously,
-            // address them by name and use SSML
-            // to embed an audio snippet in the response.
-            conv.ask(i18n.__('responseForColors.withPermissions',
-                getSplitName(conv.user.storage.userName),
-                luckyNumber,
-                audioSound));
-        } else {
-            conv.ask(i18n.__('responseForColors.withoutPermissions',
-                luckyNumber,
-                audioSound));
-        }
-        conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
-    });
-
+    if (conv.user.storage.userName) {
+        // If we collected user name previously,
+        // address them by name and use SSML
+        // to embed an audio snippet in the response.
+        conv.ask(i18n.__('responseForColors.withPermissions',
+            getSplitName(conv.user.storage.userName),
+            luckyNumber,
+            audioSound));
+    } else {
+        conv.ask(i18n.__('responseForColors.withoutPermissions',
+            luckyNumber,
+            audioSound));
+    }
+    conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
+    checkDebugger()
 });
 
 // Handle the Dialogflow follow-up intents
 app.intent(['favorite color - yes', 'favorite fake color - yes'], (conv) => {
-
-    return debug.isReady().then(() => {
-        conv.ask(i18n.__('askForColors.fakeColorAsk'));
-        // If the user is using a screened device, display the carousel
-        if (conv.screen) return conv.ask(fakeColorCarousel());
-    });
-
+    conv.ask(i18n.__('askForColors.fakeColorAsk'));
+    // If the user is using a screened device, display the carousel
+    if (conv.screen) conv.ask(fakeColorCarousel());
+    checkDebugger()
 });
 
 // Handle the Dialogflow intent named 'favorite fake color'.
@@ -145,37 +137,32 @@ app.intent(['favorite color - yes', 'favorite fake color - yes'], (conv) => {
 app.intent('favorite fake color', (conv, {
     fakeColor
 }) => {
-    return debug.isReady().then(() => {
-        fakeColor = conv.arguments.get('OPTION') || fakeColor;
-        // Present user with the corresponding basic card and end the conversation.
-        if (!conv.screen) {
-            conv.ask(colorMap[fakeColor].text);
-        } else {
-            conv.ask(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
-        }
-        conv.ask(i18n.__('fakeColors.another'));
-        conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
-    });
-
+    fakeColor = conv.arguments.get('OPTION') || fakeColor;
+    // Present user with the corresponding basic card and end the conversation.
+    if (!conv.screen) {
+        conv.ask(colorMap[fakeColor].text);
+    } else {
+        conv.ask(i18n.__('responseForFakeColor'), new BasicCard(colorMap[fakeColor]));
+    }
+    conv.ask(i18n.__('fakeColors.another'));
+    conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
+    checkDebugger()
 });
 
 // Handle the Dialogflow NO_INPUT intent.
 // Triggered when the user doesn't provide input to the Action
 app.intent('actions_intent_NO_INPUT', (conv) => {
 
-    return debug.isReady().then(() => {
-
-        // Use the number of reprompts to vary response
-        const repromptCount = parseInt(conv.arguments.get('REPROMPT_COUNT'));
-        if (repromptCount === 0) {
-            conv.ask(i18n.__('noInputReprompt.firstAsk'));
-        } else if (repromptCount === 1) {
-            conv.ask(i18n.__('noInputReprompt.secondAsk'));
-        } else if (conv.arguments.get('IS_FINAL_REPROMPT')) {
-            conv.close(i18n.__('noInputReprompt.sorryTrouble'));
-        }
-    });
-
+    // Use the number of reprompts to vary response
+    const repromptCount = parseInt(conv.arguments.get('REPROMPT_COUNT'));
+    if (repromptCount === 0) {
+        conv.ask(i18n.__('noInputReprompt.firstAsk'));
+    } else if (repromptCount === 1) {
+        conv.ask(i18n.__('noInputReprompt.secondAsk'));
+    } else if (conv.arguments.get('IS_FINAL_REPROMPT')) {
+        conv.close(i18n.__('noInputReprompt.sorryTrouble'));
+    }
+    checkDebugger()
 });
 
 // Define a mapping of fake color strings to basic card objects.
@@ -248,6 +235,14 @@ function getSplitName(name) {
     const splitName = name.split(' ');
 
     return splitName[0];
+}
+
+function checkDebugger() {
+    if (!debugInitialized) {
+        return debug.isReady().then(() => {
+            debugInitialized = true
+        });
+    }
 }
 
 // Set the DialogflowApp object to handle the HTTPS POST request.
