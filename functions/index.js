@@ -76,7 +76,7 @@ app.intent('Default Welcome Intent', (conv) => {
             i18n.__('baseColors.green')));
     }
 
-    checkDebugger()
+    //checkDebugger()
 });
 
 // Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
@@ -96,7 +96,7 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
         i18n.__('baseColors.blue'),
         i18n.__('baseColors.green')));
 
-    checkDebugger()
+    //checkDebugger()
 });
 
 // Handle the Dialogflow intent named 'favorite color'.
@@ -121,7 +121,7 @@ app.intent('favorite color', (conv, {
             audioSound));
     }
     conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
-    checkDebugger()
+    //checkDebugger()
 });
 
 // Handle the Dialogflow follow-up intents
@@ -129,7 +129,7 @@ app.intent(['favorite color - yes', 'favorite fake color - yes'], (conv) => {
     conv.ask(i18n.__('askForColors.fakeColorAsk'));
     // If the user is using a screened device, display the carousel
     if (conv.screen) conv.ask(fakeColorCarousel());
-    checkDebugger()
+    //checkDebugger()
 });
 
 // Handle the Dialogflow intent named 'favorite fake color'.
@@ -146,7 +146,7 @@ app.intent('favorite fake color', (conv, {
     }
     conv.ask(i18n.__('fakeColors.another'));
     conv.ask(new Suggestions(i18n.__('options.yes'), 'No'));
-    checkDebugger()
+    //checkDebugger()
 });
 
 // Handle the Dialogflow NO_INPUT intent.
@@ -162,7 +162,7 @@ app.intent('actions_intent_NO_INPUT', (conv) => {
     } else if (conv.arguments.get('IS_FINAL_REPROMPT')) {
         conv.close(i18n.__('noInputReprompt.sorryTrouble'));
     }
-    checkDebugger()
+    //checkDebugger()
 });
 
 // Define a mapping of fake color strings to basic card objects.
@@ -239,7 +239,7 @@ function getSplitName(name) {
 
 function checkDebugger() {
     if (!debugInitialized) {
-        return debug.isReady().then(() => {
+        debug.isReady().then(() => {
             debugInitialized = true
         });
     }
